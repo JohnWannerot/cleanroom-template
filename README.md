@@ -33,12 +33,23 @@ $n='mittprojekt'; git clone https://github.com/JohnWannerot/cleanroom-template "
 4. Implementation: starta en **ny** session med `cd clean; claude`.
 5. Frågor från clean-sidan skrivs i `spec/QUESTIONS.md`. Dirty-sidan svarar i specen.
 
+## REA (valfritt)
+
+[REA](https://github.com/morluto/rea) är en MCP-server som låter Claude styra Ghidra. Installera den bara för dirty-sidan. Kör **inte** `npx rea-agents setup` för Claude Code, eftersom det registrerar REA i alla projekt, även på clean-sidan.
+
+```powershell
+npm install --global rea-agents; cd dirty; claude mcp add --scope local rea -- node "$(npm root -g)\rea-agents\scripts\rea.mjs" mcp
+```
+
+`--scope local` gör att REA bara laddas när Claude startas i `dirty/`. Hooken blockerar ändå REA på clean-sidan.
+
 ## Vad hooken stoppar
 
 | Försök | Resultat |
 |---|---|
 | Clean-sessionen läser något i `dirty/` eller Ghidra-filer | Blockeras |
 | Dirty-sessionen skriver Ghidra-artefakter (`FUN_`, `DAT_`, `param_1`, `local_`, `uVar3` …) i `spec/` | Blockeras |
+| Clean-sessionen anropar REA (MCP-verktyg eller `rea`-kommandot) | Blockeras |
 | Någon av sessionerna ändrar hooken eller dess inställningar | Blockeras |
 
 Hooken matchar text i sökvägar och fungerar inte som en sandlåda. Starta därför alltid varje session i sin egen mapp.

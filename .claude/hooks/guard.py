@@ -19,6 +19,11 @@ if tool in ("Write", "Edit", "MultiEdit", "NotebookEdit", "Bash", "PowerShell") 
 if mode == "clean" and re.search(r"\bdirty\b|\.gzf\b|\.gpr\b|ghidra", s):
     block("Clean-sidan får aldrig röra dirty/ eller Ghidra. Bara spec/ är tillåten källa.")
 
+# REA (MCP-verktyg eller CLI) är ett analysverktyg och hör bara till dirty-sidan
+cmd = str(inp.get("command", "")).lower()
+if mode == "clean" and (tool.startswith("mcp__rea") or re.search(r"\brea(-agents)?\b|rea\.mjs", cmd)):
+    block("REA är ett analysverktyg och får bara användas på dirty-sidan.")
+
 # Ghidra-artefakter = dekompilerad kod har läckt in i specen
 GHIDRA = r"\b(fun|dat|lab|ptr|sub)_[0-9a-f]{4,}\b|\bparam_\d+\b|\blocal_[0-9a-f]+\b|\bundefined[1248]?\b|\b[a-z]{1,3}var\d+\b"
 if mode == "dirty" and tool in ("Write", "Edit", "MultiEdit") and "spec/" in s:
