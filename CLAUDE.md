@@ -4,13 +4,13 @@ Projektet har tre zoner. Bara `spec/` får korsa gränsen.
 
 | Zon | Vem | Får läsa | Får skriva |
 |---|---|---|---|
-| `dirty/` | Analys (Ghidra, RE) | allt i `dirty/`, `spec/` | `dirty/`, `spec/` |
+| `dirty/` | Analys (Ghidra, REA) | allt i `dirty/`, `spec/` | `dirty/`, `spec/` |
 | `spec/` | Bryggan | båda | bara dirty-sidan |
 | `clean/` | Implementation | `clean/`, `spec/` | `clean/` |
 
 ## Hårda regler
 1. Två separata Claude-sessioner: dirty startas i `dirty/`, clean i `clean/`. Aldrig samma session, aldrig `/resume` över gränsen.
-2. Clean-sidan läser aldrig `dirty/`, Ghidra-projekt, binären eller dekompilerad kod. Inte heller via sök, Bash eller webben (ingen sökning på målprogrammets interna namn).
+2. Clean-sidan läser aldrig `dirty/`, Ghidra-projekt, binären eller dekompilerad kod, och använder aldrig REA eller andra analysverktyg. Inte heller via sök, Bash eller webben (ingen sökning på målprogrammets interna namn).
 3. Specen beskriver **beteende och gränssnitt**, aldrig implementation: filformat, protokoll, API-signaturer, felbeteende, testvektorer (indata → observerad utdata).
 4. Förbjudet i `spec/`: dekompilerad/disassemblerad kod, pseudokod som speglar binärens struktur, Ghidra-namn (`FUN_`, `DAT_`, `param_1`, `local_`, `uVar`), interna symbolnamn, kopierade tabeller/strängar utöver vad interoperabilitet kräver.
 5. Konstanter/magiska värden i specen kräver en rad "Varför nödvändigt" (t.ex. filformatets magic bytes).

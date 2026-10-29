@@ -1,6 +1,6 @@
 # cleanroom-template
 
-Mall för **clean room reverse engineering** med Ghidra och två separata Claude Code-sessioner.
+Mall för **clean room reverse engineering** med Ghidra (valfritt via [REA](https://github.com/morluto/rea)) och två separata Claude Code-sessioner.
 
 En session analyserar programmet (dirty). En annan bygger en ny implementation (clean) och ser bara en skriftlig spec. En hook stoppar läckor mekaniskt.
 
@@ -21,7 +21,7 @@ CLAUDE.md       Reglerna, som båda sessionerna läser
 
 ## Kom igång
 
-Krav: [Claude Code](https://claude.com/claude-code), Python 3, git, [Ghidra](https://github.com/NationalSecurityAgency/ghidra) (JDK 21).
+Krav: [Claude Code](https://claude.com/claude-code), Python 3, git, [Ghidra](https://github.com/NationalSecurityAgency/ghidra) (JDK 21). Valfritt: REA (Node.js), se nedan.
 
 ```powershell
 $n='mittprojekt'; git clone https://github.com/JohnWannerot/cleanroom-template "$n"; cd "$n"; Remove-Item -Recurse -Force .git; git init; git add -A; git commit -m "init clean room"
