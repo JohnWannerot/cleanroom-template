@@ -1,0 +1,3 @@
+dirty/bin/*
+dirty/ghidra/*
+!.keep
