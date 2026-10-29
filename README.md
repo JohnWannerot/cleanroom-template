@@ -29,11 +29,13 @@ Krav: [Claude Code](https://claude.com/claude-code), Python 3, git, [Ghidra](htt
 $n='mittprojekt'; git clone https://github.com/JohnWannerot/cleanroom-template "$n"; cd "$n"; Remove-Item -Recurse -Force .git; git init; git add -A; git commit -m "init clean room"
 ```
 
+Starta alltid via `start.cmd` (dubbelklicka). Den frågar efter zon, Enter ger `observe`, och öppnar Claude i rätt mapp så att hooken gäller.
+
 1. Lägg binären i `dirty/bin/` och fyll i `spec/README.md` (syfte och licens).
-2. Observation **först**: `cd observe; claude`. Kör programmet (helst i en VM utan nätverk) och skriv `spec/funktion-<namn>.md` utifrån `spec/SPEC-TEMPLATE.md`.
-3. Analys, bara filformat: `cd dirty; claude`. Skriv `spec/format-<namn>.md`.
+2. Observation **först**: `start.cmd` → Enter. Kör programmet (helst i en VM utan nätverk) och skriv `spec/funktion-<namn>.md` utifrån `spec/SPEC-TEMPLATE.md`.
+3. Analys, bara filformat: `start.cmd` → `dirty`. Skriv `spec/format-<namn>.md`.
 4. Committa specen: `git add spec; git commit -m "spec: <vad>"`.
-5. Implementation: starta en **ny** session med `cd clean; claude`.
+5. Implementation: starta en **ny** session med `start.cmd` → `clean`.
 6. Frågor från clean-sidan skrivs i `spec/QUESTIONS.md`. Observe-sidan svarar om funktioner, dirty-sidan om format.
 
 ## REA (valfritt)
