@@ -56,3 +56,7 @@ Ett nedlagt musikprogram sparar låtar som `.bbx`. Du vill att din app ska kunna
 - EU/Sverige: dekompilering är tillåten för interoperabilitet (direktiv 2009/24/EG art. 6, URL 40 e §). Den är inte tillåten för att klona ett konkurrerande program.
 - Läs målprogrammets licens innan du börjar.
 - En person med två AI-sessioner följer en disciplinerad process. Det är inte en juridiskt vattentät clean room. Detta är ingen juridisk rådgivning.
+
+## Licens
+
+[MIT-0](LICENSE): använd fritt, inget krav på att ta med licenstexten i dina projekt.
