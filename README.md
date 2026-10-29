@@ -1,6 +1,6 @@
 # cleanroom-template
 
-Mall för **clean room reverse engineering** med Ghidra (valfritt via [REA](https://github.com/morluto/rea)) och två separata Claude Code-sessioner.
+Mall för **clean room reverse engineering** med Ghidra (valfritt via [REA](https://github.com/morluto/rea)) och tre separata Claude Code-sessioner.
 
 En session observerar programmet när det körs och specar funktionerna (observe). En annan analyserar binären i Ghidra, men bara för filformat (dirty). En tredje bygger en ny implementation (clean) och ser bara en skriftlig spec. En hook stoppar läckor mekaniskt.
 
@@ -12,7 +12,8 @@ dirty/          Analys: binären (bin/), Ghidra-projekt (ghidra/), anteckningar 
 spec/           Enda bryggan: SPEC-TEMPLATE.md, QUESTIONS.md, README.md
 clean/          Ny implementation, skriven bara utifrån spec/
 .claude/hooks/  guard.py: blockerar regelbrott
-CLAUDE.md       Reglerna, som båda sessionerna läser
+start.cmd       Startar Claude i vald zon (default observe)
+CLAUDE.md       Reglerna, som alla sessioner läser
 ```
 
 | Zon | Får läsa | Får skriva |
@@ -40,13 +41,13 @@ Starta alltid via `start.cmd` (dubbelklicka). Den frågar efter zon, Enter ger `
 
 ## REA (valfritt)
 
-[REA](https://github.com/morluto/rea) är en MCP-server som låter Claude styra Ghidra. Installera den bara för dirty-sidan. Kör **inte** `npx rea-agents setup` för Claude Code, eftersom det registrerar REA i alla projekt, även på clean-sidan.
+[REA](https://github.com/morluto/rea) är en MCP-server som låter Claude styra Ghidra. Installera den bara för dirty-sidan. Kör **inte** `npx rea-agents setup` för Claude Code, eftersom det registrerar REA i alla projekt, även på clean- och observe-sidan.
 
 ```powershell
 npm install --global rea-agents; cd dirty; claude mcp add --scope local rea -- node "$(npm root -g)\rea-agents\scripts\rea.mjs" mcp
 ```
 
-`--scope local` gör att REA bara laddas när Claude startas i `dirty/`. Hooken blockerar ändå REA på clean-sidan.
+`--scope local` gör att REA bara laddas när Claude startas i `dirty/`. Hooken blockerar ändå REA på clean- och observe-sidan.
 
 ## Vad hooken stoppar
 
@@ -62,11 +63,11 @@ Hooken matchar text i sökvägar och fungerar inte som en sandlåda. Starta där
 
 ## Exempel
 
-Ett nedlagt musikprogram sparar låtar som `.bbx`. Du vill att din app ska kunna öppna dem.
+Ett nedlagt musikprogram sparar låtar som `.bbx`. Du vill bygga en egen app som gör samma sak och kan öppna de gamla filerna.
 
-- **Dirty** ser i Ghidra `if (param_1[0] == 0x42 && param_1[1] == 0x42)`.
-- **Spec** säger: "Filen börjar med `BB`, följt av antal spår. Varje spår har ett namn på max 32 tecken och en volym 0–100." Specen har också testvektorer.
-- **Clean** skriver tester från testvektorerna och sedan en egen parser, utan att ha sett originalkoden.
+- **Observe** kör programmet och testar "Normalisera volym" på låtar med olika volymer. `spec/funktion-normalisera.md` säger: "Högsta spåret sätts till 100, övriga skalas proportionellt och avrundas nedåt." Specen har testvektorer (40, 80 → 50, 100).
+- **Dirty** ser i Ghidra `if (param_1[0] == 0x42 && param_1[1] == 0x42)`. `spec/format-bbx.md` säger: "Filen börjar med `BB`, följt av antal spår. Varje spår har ett namn på max 32 tecken och en volym 0–100."
+- **Clean** skriver tester från testvektorerna och sedan egen kod, utan att ha sett originalkoden.
 
 ## Juridik
 
