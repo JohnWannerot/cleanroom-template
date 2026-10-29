@@ -2,11 +2,12 @@
 
 Mall för **clean room reverse engineering** med Ghidra (valfritt via [REA](https://github.com/morluto/rea)) och två separata Claude Code-sessioner.
 
-En session analyserar programmet (dirty). En annan bygger en ny implementation (clean) och ser bara en skriftlig spec. En hook stoppar läckor mekaniskt.
+En session observerar programmet när det körs och specar funktionerna (observe). En annan analyserar binären i Ghidra, men bara för filformat (dirty). En tredje bygger en ny implementation (clean) och ser bara en skriftlig spec. En hook stoppar läckor mekaniskt.
 
 ## Struktur
 
 ```
+observe/        Observation: kör programmet, anteckningar (notes/), ingen Ghidra
 dirty/          Analys: binären (bin/), Ghidra-projekt (ghidra/), anteckningar (notes/)
 spec/           Enda bryggan: SPEC-TEMPLATE.md, QUESTIONS.md, README.md
 clean/          Ny implementation, skriven bara utifrån spec/
@@ -16,7 +17,8 @@ CLAUDE.md       Reglerna, som båda sessionerna läser
 
 | Zon | Får läsa | Får skriva |
 |---|---|---|
-| `dirty/` | `dirty/`, `spec/` | `dirty/`, `spec/` |
+| `observe/` | `observe/`, `spec/` | `observe/`, `spec/funktion-*` |
+| `dirty/` | `dirty/`, `spec/` | `dirty/`, `spec/format-*` |
 | `clean/` | `clean/`, `spec/` | `clean/` |
 
 ## Kom igång
@@ -28,10 +30,11 @@ $n='mittprojekt'; git clone https://github.com/JohnWannerot/cleanroom-template "
 ```
 
 1. Lägg binären i `dirty/bin/` och fyll i `spec/README.md` (syfte och licens).
-2. Analys: `cd dirty; claude`. Skriv en spec per komponent utifrån `spec/SPEC-TEMPLATE.md`.
-3. Committa specen: `git add spec; git commit -m "spec: <vad>"`.
-4. Implementation: starta en **ny** session med `cd clean; claude`.
-5. Frågor från clean-sidan skrivs i `spec/QUESTIONS.md`. Dirty-sidan svarar i specen.
+2. Observation **först**: `cd observe; claude`. Kör programmet (helst i en VM utan nätverk) och skriv `spec/funktion-<namn>.md` utifrån `spec/SPEC-TEMPLATE.md`.
+3. Analys, bara filformat: `cd dirty; claude`. Skriv `spec/format-<namn>.md`.
+4. Committa specen: `git add spec; git commit -m "spec: <vad>"`.
+5. Implementation: starta en **ny** session med `cd clean; claude`.
+6. Frågor från clean-sidan skrivs i `spec/QUESTIONS.md`. Observe-sidan svarar om funktioner, dirty-sidan om format.
 
 ## REA (valfritt)
 
@@ -47,9 +50,10 @@ npm install --global rea-agents; cd dirty; claude mcp add --scope local rea -- n
 
 | Försök | Resultat |
 |---|---|
-| Clean-sessionen läser något i `dirty/` eller Ghidra-filer | Blockeras |
+| Clean- eller observe-sessionen läser något i `dirty/` eller Ghidra-filer | Blockeras |
+| Dirty-sessionen skriver en funktionsspec (`spec/funktion-*`) | Blockeras |
 | Dirty-sessionen skriver Ghidra-artefakter (`FUN_`, `DAT_`, `param_1`, `local_`, `uVar3` …) i `spec/` | Blockeras |
-| Clean-sessionen anropar REA (MCP-verktyg eller `rea`-kommandot) | Blockeras |
+| Clean- eller observe-sessionen anropar REA (MCP-verktyg eller `rea`-kommandot) | Blockeras |
 | Någon av sessionerna ändrar hooken eller dess inställningar | Blockeras |
 
 Hooken matchar text i sökvägar och fungerar inte som en sandlåda. Starta därför alltid varje session i sin egen mapp.
@@ -65,8 +69,9 @@ Ett nedlagt musikprogram sparar låtar som `.bbx`. Du vill att din app ska kunna
 ## Juridik
 
 - EU/Sverige: dekompilering är tillåten för interoperabilitet (direktiv 2009/24/EG art. 6, URL 40 e §). Den är inte tillåten för att klona ett konkurrerande program.
+- Att köra och observera programmet är alltid tillåtet för den som får använda det (art. 5.3), och funktionalitet är inte skyddad (EU-domstolen, *SAS Institute*, C-406/10). Därför specas funktioner av observe-sidan och aldrig från dekompilerad kod.
 - Läs målprogrammets licens innan du börjar.
-- En person med två AI-sessioner följer en disciplinerad process. Det är inte en juridiskt vattentät clean room. Detta är ingen juridisk rådgivning.
+- En person med flera AI-sessioner följer en disciplinerad process. Det är inte en juridiskt vattentät clean room. Detta är ingen juridisk rådgivning.
 
 ## Licens
 

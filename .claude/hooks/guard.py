@@ -1,4 +1,4 @@
-# Clean room-vakt. Anrop: guard.py clean|dirty  (PreToolUse, JSON på stdin). Exit 2 = blockera.
+# Clean room-vakt. Anrop: guard.py clean|observe|dirty  (PreToolUse, JSON på stdin). Exit 2 = blockera.
 import json, re, sys
 
 sys.stderr.reconfigure(encoding="utf-8")
@@ -15,13 +15,17 @@ def block(msg):
 if tool in ("Write", "Edit", "MultiEdit", "NotebookEdit", "Bash", "PowerShell") and re.search(r"\.claude/(settings|hooks)", s):
     block("Clean room-vakten får inte ändras av modellen.")
 
-# ponytail: textmatch på sökväg, inte sandlåda. Kör alltid clean-sessionen med cwd = clean/.
-if mode == "clean" and re.search(r"\bdirty\b|\.gzf\b|\.gpr\b|ghidra", s):
-    block("Clean-sidan får aldrig röra dirty/ eller Ghidra. Bara spec/ är tillåten källa.")
+# ponytail: textmatch på sökväg, inte sandlåda. Kör alltid clean/observe-sessionen med cwd = clean/ resp. observe/.
+if mode in ("clean", "observe") and re.search(r"\bdirty\b|\.gzf\b|\.gpr\b|ghidra", s):
+    block(f"{mode}-sidan får aldrig röra dirty/ eller Ghidra.")
+
+# Funktionsspecar skrivs bara från observation, aldrig av sidan som har sett koden
+if mode == "dirty" and tool in ("Write", "Edit", "MultiEdit", "Bash", "PowerShell") and "spec/funktion-" in s:
+    block("Dirty-sidan får inte skriva funktionsspecar (spec/funktion-*). Bara observe-sidan.")
 
 # REA (MCP-verktyg eller CLI) är ett analysverktyg och hör bara till dirty-sidan
 cmd = str(inp.get("command", "")).lower()
-if mode == "clean" and (tool.startswith("mcp__rea") or re.search(r"\brea(-agents)?\b|rea\.mjs", cmd)):
+if mode in ("clean", "observe") and (tool.startswith("mcp__rea") or re.search(r"\brea(-agents)?\b|rea\.mjs", cmd)):
     block("REA är ett analysverktyg och får bara användas på dirty-sidan.")
 
 # Ghidra-artefakter = dekompilerad kod har läckt in i specen

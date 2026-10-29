@@ -1,8 +1,10 @@
 # Spec: <komponent>
 
+<!-- Filnamn: funktion-<namn>.md (observe-sidan) eller format-<namn>.md (dirty-sidan). -->
+
 - Analytiker: <namn>   Datum: <ÅÅÅÅ-MM-DD>
 - Binär: <filnamn> v<version>, SHA-256 <hash>
-- Syfte (interoperabilitet): <varför detta behövs>
+- Källa: <observation | dekompilering för interoperabilitet>
 
 ## Omfång
 Vad komponenten gör, sett utifrån. Vad som ligger utanför.
